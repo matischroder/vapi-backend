@@ -3,3 +3,6 @@ uvicorn
 python-dotenv
 requests
 vapi_python
+boto3
+httpx
+firebase-admin
