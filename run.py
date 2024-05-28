@@ -1,12 +1,25 @@
-import os
+import uvicorn
 from dotenv import load_dotenv
-from app import create_app
+import os
 
-load_dotenv()  # Load environment variables from .env file
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
 
-app = create_app()
+# Obtener el puerto desde la variable de entorno
+port = int(os.getenv("PORT", 5050))
 
 if __name__ == "__main__":
-    import uvicorn
+    # Exclude virtual environment from watch files
+    import sys
+    from pathlib import Path
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+    venv_path = Path(sys.executable).parent.parent
+    watch_dirs = [d for d in [str(venv_path), "."] if d != str(venv_path)]
+
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=port,
+        reload=True,
+        reload_dirs=watch_dirs,
+    )
