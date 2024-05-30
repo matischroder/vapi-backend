@@ -1,12 +1,11 @@
 from .db_utils import dynamodb_resource
-from botocore.exceptions import ClientError
-from fastapi import HTTPException
 
 
 class DynamoDBPhoneService:
     def __init__(self):
         self.dynamodb = dynamodb_resource
-        self.projects_table = self.dynamodb.Table("projects")
+        self.table_name = "projects"
+        self.projects_table = self.dynamodb.Table(self.table_name)
 
     def get_project_phone_numbers(self, project_id: str):
         response = self.projects_table.get_item(Key={"project_id": project_id})
