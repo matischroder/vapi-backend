@@ -4,7 +4,7 @@ from firebase_admin import credentials, initialize_app
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import agent, call, phone_number
+from app.routes import assistant, call, phone_number
 
 
 firebase_credentials_path = "app/firebase/serviceAccountKey.json"
@@ -29,7 +29,7 @@ app.add_middleware(
 )
 
 router = APIRouter()
-router.include_router(agent.router, prefix="/agent", tags=["Agents"])
+router.include_router(assistant.router, prefix="/assistant", tags=["Assistant"])
 router.include_router(call.router, prefix="/call", tags=["Calls"])
 router.include_router(
     phone_number.router, prefix="/phone_number", tags=["Phone Numbers"]

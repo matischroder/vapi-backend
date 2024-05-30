@@ -14,57 +14,98 @@ class VapiService:
         }
         self.agents = {}
 
-    def create_agent(
-        self,
-        agent_id,
-        first_message,
-        model_provider="openai",
-        model_name="gpt-3.5-turbo",
-        voice="jennifer-playht",
-    ):
-        agent = {
-            "firstMessage": first_message,
-            "model": {
-                "provider": model_provider,
-                "model": model_name,
-                "messages": [{"role": "system", "content": "You are an assistant."}],
-            },
-            "voice": voice,
-        }
-        self.agents[agent_id] = agent
-        return {"status": "success", "agent_id": agent_id, "agent": agent}
+    @staticmethod
+    async def create_assistant(payload: dict):
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            response = await client.post(
+                f"{VapiService.BASE_URL}/assistant",
+                headers=headers,
+                json={
+                    "name": payload.get("name"),
+                    "firstMessage": payload.get("first_message"),
+                    "model": {
+                        "model": "gpt-3.5-turbo",
+                        "messages": [
+                            {"role": "system", "content": payload.get("prompt")}
+                        ],
+                        "provider": "openai",
+                        "maxTokens": 250,
+                        "temperature": 0.7,
+                        "emotionRecognitionEnabled": True,
+                    },
+                    "voice": {
+                        "provider": payload.get("voice_provider"),
+                        "voiceId": payload.get("voice_id"),
+                        "speed": payload.get("voice_speed"),
+                    },
+                },
+            )
+            response.raise_for_status()
+            return response.json()
 
-    def get_agent(self, agent_id):
-        agent = self.agents.get(agent_id)
-        if agent:
-            return {"status": "success", "agent": agent}
-        else:
-            return {"status": "failed", "message": "Agent not found"}
+    @staticmethod
+    async def update_assistant(assistant_id: str, payload: dict):
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            response = await client.patch(
+                f"{VapiService.BASE_URL}/assistant/{assistant_id}",
+                headers=headers,
+                json={
+                    "firstMessage": payload.get("first_message"),
+                    "model": {
+                        "model": "gpt-3.5-turbo",
+                        "messages": [
+                            {"role": "system", "content": payload.get("prompt")}
+                        ],
+                        "provider": "openai",
+                        "maxTokens": 250,
+                        "temperature": 0.7,
+                        "emotionRecognitionEnabled": True,
+                    },
+                    "voice": {
+                        "provider": payload.get("voice_provider"),
+                        "voiceId": payload.get("voice_id"),
+                        "speed": payload.get("voice_speed"),
+                    },
+                },
+            )
+            response.raise_for_status()
+            return response.json()
 
-    def list_agents(self):
-        return {"status": "success", "agents": self.agents}
+    @staticmethod
+    async def delete_assistant(assistant_id: str):
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            response = await client.delete(
+                f"{VapiService.BASE_URL}/assistant/{assistant_id}",
+                headers=headers,
+            )
+            response.raise_for_status()
+            return response.json()
 
-    def create_call(self, phone_number_id, customer_number, agent_id):
-        agent = self.agents.get(agent_id)
-        if not agent:
-            return {"status": "failed", "message": "Agent not found"}
-
-        data = {
-            "assistant": agent,
-            "phoneNumberId": phone_number_id,
-            "customer": {
-                "number": customer_number,
-            },
-        }
-
-        response = requests.post(
-            "https://api.vapi.ai/call/phone", headers=self.headers, json=data
-        )
-
-        if response.status_code == 201:
-            return {"status": "success", "data": response.json()}
-        else:
-            return {"status": "failed", "message": response.text}
+    @staticmethod
+    async def get_assistant(assistant_id: str):
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            response = await client.get(
+                f"{VapiService.BASE_URL}/assistant/{assistant_id}",
+                headers=headers,
+            )
+            response.raise_for_status()
+            return response.json()
 
     @staticmethod
     async def buy_phone_number(area_code: str):
