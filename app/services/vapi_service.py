@@ -176,3 +176,36 @@ class VapiService:
             )
             response.raise_for_status()
             return response.json()
+
+    @staticmethod
+    async def create_call(payload: dict):
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            response = await client.post(
+                f"{VapiService.BASE_URL}/call/phone",
+                headers=headers,
+                json={
+                    "customerId": payload.get("customerId"),
+                    "customer": {
+                        "number": payload.get("customer_number"),
+                        "name": payload.get("customer_name"),
+                        "extension": payload.get("extension"),
+                    },
+                    "phoneNumberId": payload.get("phone_number_id"),
+                    "phoneNumber": {
+                        "twilioPhoneNumber": payload.get("twilio_phone_number"),
+                        "twilioAccountSid": payload.get("twilio_account_sid"),
+                        "twilioAuthToken": payload.get("twilio_auth_token"),
+                        "name": payload.get("phone_number_name"),
+                    },
+                    "assistantId": payload.get("assistant_id"),
+                    "serverUrl": payload.get("server_url"),
+                    "serverUrlSecret": payload.get("server_url_secret"),
+                    "metadata": payload.get("metadata"),
+                },
+            )
+            response.raise_for_status()
+            return response.json()
