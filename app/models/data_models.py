@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 from vapi_python import vapi_python
@@ -113,13 +113,13 @@ Si bien los intereses están, el plan se adecua a su capacidad de pago y es una 
 
 
 class AssistantPayload(BaseModel):
-    name: str
     project_id: str
-    first_message: str = default_first_message
-    prompt: str = default_prompt
-    voice_provider: str = "azure"
-    voice_id: str = "es-PY-TaniaNeural"
-    voice_speed: float = 1
+    name: str = Field(default="")
+    first_message: str = Field(default=default_first_message)
+    prompt: str = Field(default=default_prompt)
+    voice_provider: str = Field(default="azure")
+    voice_id: str = Field(default="es-PY-TaniaNeural")
+    voice_speed: float = Field(default=1)
 
 
 class CallRequest(BaseModel):
