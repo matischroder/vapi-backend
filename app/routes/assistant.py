@@ -2,7 +2,7 @@ import httpx
 from fastapi import APIRouter, HTTPException, Depends
 
 from app.auth.firebase_auth import verify_firebase_token
-from app.models.data_models import AssistantPayload
+from app.models.assistant import AssistantPayload
 from app.services.vapi_service import VapiService
 from app.services.dynamo_db.assistants_service import DynamoDBAssistantsService
 
