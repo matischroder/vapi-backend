@@ -4,7 +4,7 @@ from app.config import Config
 
 
 class VapiService:
-    BASE_URL = "https://api.vapi.ai"  # Añadir esta línea
+    BASE_URL = "https://api.vapi.ai"
 
     def __init__(self):
         self.auth_token = Config.VAPI_API_KEY
@@ -206,6 +206,20 @@ class VapiService:
                     "serverUrlSecret": payload.get("server_url_secret"),
                     "metadata": payload.get("metadata"),
                 },
+            )
+            response.raise_for_status()
+            return response.json()
+
+    @staticmethod
+    async def get_call(call_id: str):
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            response = await client.get(
+                f"{VapiService.BASE_URL}/call/{call_id}",
+                headers=headers,
             )
             response.raise_for_status()
             return response.json()
