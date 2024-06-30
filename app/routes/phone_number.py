@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Depends, Request
 
 from app.auth.firebase_auth import verify_firebase_token
-from app.models.data_models import PhoneNumber
+from app.models.phone_number import PhoneNumber
 from app.services.vapi_service import VapiService
 from app.services.dynamo_db.phone_number_service import DynamoDBPhoneService
 
