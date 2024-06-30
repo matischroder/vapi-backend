@@ -1,18 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional
+from app.models.call_request import CallRequest
 from app.services.vapi_service import VapiService
 
 router = APIRouter()
-
-
-class CallRequest(BaseModel):
-    firstMessage: Optional[str] = None
-    context: Optional[str] = None
-    voice: Optional[str] = None
-    phone_number_id: Optional[str] = None
-    customer_number: Optional[str] = None
-    agent_id: Optional[str] = None
 
 
 @router.post("/create_call")
