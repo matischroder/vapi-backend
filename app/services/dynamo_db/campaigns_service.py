@@ -33,3 +33,28 @@ class DynamoDBCampaignService:
         except ClientError as e:
             print("An error occurred: %s", e)
             return None
+
+    def get_all_campaigns(self):
+        try:
+            # Scan the Campaigns table
+            print("Scanning the Campaigns table to fetch all campaigns")
+            response = self.dynamodb_client.scan(TableName="campaigns")
+
+            # Filter the results
+            items = response["Items"]
+            campaigns = [
+                item
+                for item in items
+                if not item.get("is_deleted", {}).get("BOOL", False)
+            ]
+
+            if campaigns:
+                print("Found %d campaigns" % len(campaigns))
+                return campaigns
+            else:
+                print("No campaigns found")
+                return []  # Return an empty list instead of None
+
+        except ClientError as e:
+            print("An error occurred: %s" % e)
+            return None
