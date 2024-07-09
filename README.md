@@ -76,7 +76,13 @@ pip install -r requirements.txt
 ### Example `.env` File
 
 ```ini
-EXTERNAL_API_URL=https://api.example.com
+export PORT=5050
+export CORS_ORIGIN='["http://localhost","http://localhost:3000","https://yourdomain.com","*"]'
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+export AWS_REGION=
+export VAPI_API_KEY=
+export VAPI_PUBLIC_KEY=
 ```
 
 ### Running the Application
