@@ -43,6 +43,32 @@ class DynamoDBDebtService:
             print("An error occurred:", e)
             return None
 
+    def get_debts_by_campaign_id(self, campaign_id: str):
+        try:
+            response = dynamodb_client.query(
+                TableName=self.table_name,
+                IndexName="campaign_id-index",
+                KeyConditionExpression="campaign_id = :campaign_id",
+                ExpressionAttributeValues={":campaign_id": {"S": campaign_id}},
+            )
+
+            items = response.get("Items", [])
+            debts = [
+                self.deserialize_item(item)
+                for item in items
+                if item.get("campaign_id", {}).get("S") == campaign_id
+            ]
+            if debts:
+                print(f"Found {len(debts)} debts for campaign_id: {campaign_id}")
+                return debts
+            else:
+                print(f"No debts found for campaign_id: {campaign_id}")
+                return []
+
+        except ClientError as e:
+            print("An error occurred:", e)
+            return None
+
     def get_debts_by_user_id(self, user_id: str):
         try:
             print(f"Scanning the Debts table for user_id: {user_id}")
