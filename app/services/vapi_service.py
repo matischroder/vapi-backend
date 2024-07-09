@@ -180,35 +180,40 @@ class VapiService:
     @staticmethod
     async def create_call(payload: dict):
         async with httpx.AsyncClient() as client:
-            headers = {
-                "Authorization": f"Bearer {Config.VAPI_API_KEY}",
-                "Content-Type": "application/json",
-            }
-            response = await client.post(
-                f"{VapiService.BASE_URL}/call/phone",
-                headers=headers,
-                json={
-                    "customerId": payload.get("customerId"),
-                    "customer": {
-                        "number": payload.get("customer_number"),
-                        "name": payload.get("customer_name"),
-                        "extension": payload.get("extension"),
+            try:
+                headers = {
+                    "Authorization": f"Bearer {Config.VAPI_API_KEY}",
+                    "Content-Type": "application/json",
+                }
+                print(payload)
+                response = await client.post(
+                    f"{VapiService.BASE_URL}/call",
+                    headers=headers,
+                    json={
+                        "customer": {
+                            "number": payload.get("userPhoneNumber"),
+                        },
+                        "phoneNumberId": payload.get("phoneNumberId"),
+                        "assistantId": payload.get("assistantId"),
+                        "assistantOverrides": {
+                            "firstMessage": payload.get("firstMessage"),
+                        },
+                        # "serverUrl": payload.get("server_url"),
+                        # "serverUrlSecret": payload.get("server_url_secret"),
+                        # "metadata": payload.get("metadata"),
                     },
-                    "phoneNumberId": payload.get("phone_number_id"),
-                    "phoneNumber": {
-                        "twilioPhoneNumber": payload.get("twilio_phone_number"),
-                        "twilioAccountSid": payload.get("twilio_account_sid"),
-                        "twilioAuthToken": payload.get("twilio_auth_token"),
-                        "name": payload.get("phone_number_name"),
-                    },
-                    "assistantId": payload.get("assistant_id"),
-                    "serverUrl": payload.get("server_url"),
-                    "serverUrlSecret": payload.get("server_url_secret"),
-                    "metadata": payload.get("metadata"),
-                },
-            )
-            response.raise_for_status()
-            return response.json()
+                )
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPStatusError as e:
+                print(
+                    f"HTTP error occurred: {e.response.status_code} - {e.response.text}"
+                )
+                # Aquí puedes manejar el error de manera adecuada según tus necesidades
+                raise  # O manejarlo de otra manera según sea necesario
+            except Exception as e:
+                print(f"An unexpected error occurred: {str(e)}")
+                raise
 
     @staticmethod
     async def get_call(call_id: str):
